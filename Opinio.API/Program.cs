@@ -1,23 +1,81 @@
+using FluentValidation;
+using Microsoft.AspNetCore.Mvc;
+using Opinio.API;
+using Opinio.Infrastructure.Validators;
+using Serilog;
+
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+builder.Configuration.AddEnvironmentVariables().AddConfiguration(new ConfigurationBuilder().AddJsonFile("appsettings.json", true, true).Build());
 
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+Log.Logger = new LoggerConfiguration().WriteTo.Console().CreateLogger();
+
+builder.Host.UseSerilog(
+    (context, services, loggerConfiguration) =>
+    {
+        loggerConfiguration.WriteTo.Console();
+        loggerConfiguration.ReadFrom.Configuration(context.Configuration);
+        loggerConfiguration.ReadFrom.Services(services);
+    }
+);
+builder.Services.ConfigureApplicationServices(builder.Configuration);
+
+builder.Services.AddControllers(options =>
+{ })
+.AddJsonOptions(options =>
+{
+});
+
+builder.Services.AddValidatorsFromAssemblyContaining<CategoryValidator>();
+
+builder.Services.Configure<ApiBehaviorOptions>(options =>
+{
+    options.SuppressModelStateInvalidFilter = true;
+});
+
+builder
+    .Services.AddSwaggerGen(opts =>
+    {
+        //opts.CustomSchemaIds(opts => opts.FullName?.Replace("+", "."));
+        //var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+        //var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+        //opts.IncludeXmlComments(xmlPath);
+    })
+    .AddEndpointsApiExplorer();
+
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll",
+        policy =>
+        {
+            policy.AllowAnyOrigin()
+                  .AllowAnyMethod()
+                  .AllowAnyHeader();
+        });
+});
+
+builder.Services.AddHealthChecks();
+builder.Services.AddAuthorization();
+
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Admin API v1"));
 }
 
-app.UseHttpsRedirection();
 
+
+app.UseCors("AllowAll");
+
+app.UseRouting();
+
+app.MapHealthChecks("/health");
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
