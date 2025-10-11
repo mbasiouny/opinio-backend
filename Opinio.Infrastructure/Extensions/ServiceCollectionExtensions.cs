@@ -12,6 +12,8 @@ public static class ServiceCollectionExtensions
     {
         services.AddScoped<ICategoryRepository, CategoryRepository>();
         services.AddScoped<ICategoryService, CategoryService>();
+        services.AddScoped<IEntityRepository, EntityRepository>();
+        services.AddScoped<IEntityService, EntityService>();
 
         return services;
     }

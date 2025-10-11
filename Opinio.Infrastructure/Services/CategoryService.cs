@@ -22,6 +22,11 @@ public class CategoryService(
             if (!validationResult.IsValid)
                 return OperationResult<Category>.ValidationError(validationResult.ToErrorDictionary());
 
+            if (await categoryRepository.IsExistAsync(category.Name, cancellationToken))
+            {
+                return CreateValidationError(nameof(category.Name), "This Category Name Already Exist");
+            }
+
             category.CreatedBy = "Guest";
             category.CreatedAt = DateTime.UtcNow;
 
@@ -50,6 +55,11 @@ public class CategoryService(
             if (existingCategory == null)
             {
                 return OperationResult<Category>.NotFound("This Category Not Found");
+            }
+
+            if (existingCategory.Name != category.Name && (await categoryRepository.IsExistAsync(category.Name, cancellationToken)))
+            {
+                return CreateValidationError(nameof(category.Name), "This Category Name Already Exist");
             }
 
             categoryRepository.Update(existingCategory, category);
@@ -130,6 +140,20 @@ public class CategoryService(
         {
             return OperationResult<List<Category>>.Failure(message: "Error When List Categories");
         }
+    }
+    #endregion
+    #region Private
+    private OperationResult<Category> CreateValidationError(string fieldName, string errorMessage)
+    {
+        return OperationResult<Category>.ValidationError(
+            new Dictionary<string, List<string>>()
+            {
+                {
+                    fieldName,
+                    new List<string> { errorMessage }
+                },
+            }
+        );
     }
     #endregion
 }

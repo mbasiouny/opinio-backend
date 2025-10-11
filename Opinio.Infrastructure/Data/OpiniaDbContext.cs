@@ -8,6 +8,7 @@ public class OpiniaDbContext : DbContext
         : base(options) { }
 
     public DbSet<Category> Categories { get; set; }
+    public DbSet<Entity> Entities { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
