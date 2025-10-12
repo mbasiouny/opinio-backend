@@ -64,15 +64,26 @@ public class EntityMappingProfile : Profile
         #endregion
 
         #region List
-        CreateMap<Entity, GetEntityResponse>()
-            .ForMember(dest => dest.CategoryName,
-                opt => opt.MapFrom(src => src.Category == null ? null : src.Category.Name));
 
         CreateMap<OperationResult<List<Entity>>, OperationResult<List<GetEntityResponse>>>()
             .ConstructUsing(
                 (src, ctx) =>
                     new OperationResult<List<GetEntityResponse>>(
                         data: ctx.Mapper.Map<List<GetEntityResponse>>(src.Data),
+                        validationErrors: src.ValidationErrors,
+                        message: src.Message,
+                        httpCode: src.HttpCode,
+                        status: src.Status
+                    )
+            );
+
+        CreateMap<PaginatedResult<Entity>, PaginatedResult<GetEntityResponse>>().ForMember(dest => dest.Items, opt => opt.MapFrom(src => src.Items));
+
+        CreateMap<OperationResult<PaginatedResult<Entity>>, OperationResult<PaginatedResult<GetEntityResponse>>>()
+            .ConstructUsing(
+                (src, ctx) =>
+                    new OperationResult<PaginatedResult<GetEntityResponse>>(
+                        data: ctx.Mapper.Map<PaginatedResult<GetEntityResponse>>(src.Data),
                         validationErrors: src.ValidationErrors,
                         message: src.Message,
                         httpCode: src.HttpCode,

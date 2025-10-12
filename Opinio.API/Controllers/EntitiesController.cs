@@ -74,5 +74,15 @@ public class EntitiesController(IEntityService entityService, IMapper mapper) : 
     }
     #endregion
 
+    #region Get - List
 
+    [HttpGet("entities")]
+    public async Task<IActionResult> ListEntities([FromQuery] int? pageNumber, [FromQuery] int? pageSize, CancellationToken cancellationToken = default)
+    {
+        var entities = await entityService.ListEntitiesAsync(pageNumber ?? 1, pageSize ?? 10, cancellationToken);
+        var entityResponse = mapper.Map<OperationResult<PaginatedResult<GetEntityResponse>>>(entities);
+
+        return Ok(entityResponse);
+    }
+    #endregion
 }

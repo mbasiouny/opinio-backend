@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Opinio.Core.Entities;
+using Opinio.Core.Helpers;
 using Opinio.Core.Repositories;
 
 namespace Opinio.Infrastructure.Data;
@@ -25,14 +26,21 @@ public class EntityRepository(OpiniaDbContext opiniaDbContext) : GenericReposito
             .Where(e => e.CategoryId == categoryId)
             .ToListAsync(cancellationToken);
     }
-
-    public Task<bool> IsExistAsync(string name, int categoryId, CancellationToken cancellationToken)
-    {
-        return _dbSet.AnyAsync(e => e.Name == name && e.CategoryId == categoryId, cancellationToken);
-    }
-
     public async Task<Entity?> GetEntityAsync(int entityId, CancellationToken cancellationToken)
     {
         return await _dbSet.Include(e => e.Category).FirstOrDefaultAsync(e => e.Id == entityId);
+    }
+
+    public async Task<PaginatedResult<Entity>> ListAsync(int pageNumber, int pageSize, CancellationToken cancellationToken)
+    {
+        var totalItems = await _dbSet.CountAsync(cancellationToken);
+
+        var items = await _dbSet
+            .OrderBy(e => e.Id)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync(cancellationToken);
+
+        return new PaginatedResult<Entity>(totalItems, pageSize, items);
     }
 }

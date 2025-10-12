@@ -25,7 +25,7 @@ public class EntityService(
 
             if (!await categoryRepository.IsExistAsync(entity.CategoryId, cancellationToken))
             {
-                return CreateValidationError(nameof(entity.CategoryId), "This Category Not Found");
+                return OperationResultHelper.CreateValidationError<Entity>(nameof(entity.CategoryId), "This Category Not Found");
             }
 
             entity.CreatedBy = "Guest";
@@ -60,7 +60,7 @@ public class EntityService(
 
             if (!await categoryRepository.IsExistAsync(entity.CategoryId, cancellationToken))
             {
-                return CreateValidationError(nameof(entity.CategoryId), "This Category Not Found");
+                return OperationResultHelper.CreateValidationError<Entity>(nameof(entity.CategoryId), "This Category Not Found");
             }
 
             entityRepository.Update(existingEntity, entity);
@@ -143,19 +143,26 @@ public class EntityService(
         }
     }
     #endregion
-
-    #region Private
-    private OperationResult<Entity> CreateValidationError(string fieldName, string errorMessage)
+    #region ListPaginated
+    public async Task<OperationResult<PaginatedResult<Entity>>> ListEntitiesAsync(int pageNumber, int pageSize, CancellationToken cancellationToken)
     {
-        return OperationResult<Entity>.ValidationError(
-            new Dictionary<string, List<string>>()
+        try
+        {
+            if (pageNumber <= 0)
             {
-                {
-                    fieldName,
-                    new List<string> { errorMessage }
-                },
+                return OperationResultHelper.CreateValidationError<PaginatedResult<Entity>>(nameof(pageNumber), "Invalid Page Number");
             }
-        );
+            if (pageSize <= 0)
+            {
+                return OperationResultHelper.CreateValidationError<PaginatedResult<Entity>>(nameof(pageSize), "Invalid Page Size");
+            }
+            var paginatedResult = await entityRepository.ListAsync(pageNumber, pageSize, cancellationToken);
+            return OperationResult<PaginatedResult<Entity>>.Success(paginatedResult);
+        }
+        catch (Exception ex)
+        {
+            return OperationResult<PaginatedResult<Entity>>.Failure(message: "Error When List Entities Paginated");
+        }
     }
     #endregion
 }

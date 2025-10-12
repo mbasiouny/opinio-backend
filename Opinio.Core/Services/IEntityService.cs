@@ -10,4 +10,5 @@ public interface IEntityService
     Task<OperationResult<string>> DeleteEntityAsync(int id, CancellationToken cancellationToken);
     Task<OperationResult<Entity>> GetEntityAsync(int entityId, CancellationToken cancellationToken);
     Task<OperationResult<List<Entity>>> ListEntitiesByCategoryAsync(int categoryId, CancellationToken cancellationToken);
+    Task<OperationResult<PaginatedResult<Entity>>> ListEntitiesAsync(int pageNumber, int pageSize, CancellationToken cancellationToken);
 }
