@@ -1,4 +1,6 @@
-﻿namespace Opinio.API.Models.Entity;
+﻿using Opinio.Core.Enums;
+
+namespace Opinio.API.Models.Entity;
 
 public class GetEntityResponse
 {
@@ -10,6 +12,8 @@ public class GetEntityResponse
     public string Website { get; set; }
     public string Address { get; set; }
     public string ImageUrl { get; set; }
+    public EntityStatus Status { get; set; }
+    public string StatusDesc { get; set; }
     public string CreatedBy { get; set; }
     public DateTime CreatedAt { get; set; }
     public string UpdatedBy { get; set; }

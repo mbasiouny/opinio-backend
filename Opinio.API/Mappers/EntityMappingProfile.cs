@@ -47,8 +47,13 @@ public class EntityMappingProfile : Profile
 
         #region GetById
         CreateMap<Entity, GetEntityResponse>()
-        .ForMember(dest => dest.CategoryName,
-            opt => opt.MapFrom(src => src.Category == null ? null : src.Category.Name));
+        .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.Category == null ? null : src.Category.Name))
+        .ForMember(dest => dest.StatusDesc, opt => opt.MapFrom(src =>
+            src.Status == Core.Enums.EntityStatus.Pending ? "Pending" :
+            src.Status == Core.Enums.EntityStatus.Active ? "Active" :
+            src.Status == Core.Enums.EntityStatus.Rejected ? "Rejected" :
+            "Unknown"
+        ));
 
         CreateMap<OperationResult<Entity>, OperationResult<GetEntityResponse>>()
             .ConstructUsing(

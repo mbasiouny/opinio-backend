@@ -65,9 +65,9 @@ public class EntitiesController(IEntityService entityService, IMapper mapper) : 
     #region Get - List
 
     [HttpGet("categories/{categoryId}/entities")]
-    public async Task<IActionResult> ListEntitiesByCategory([FromRoute] int categoryId, CancellationToken cancellationToken)
+    public async Task<IActionResult> ListEntitiesByCategory([FromRoute] int categoryId, [FromQuery] int? status, CancellationToken cancellationToken)
     {
-        var entities = await entityService.ListEntitiesByCategoryAsync(categoryId, cancellationToken);
+        var entities = await entityService.ListEntitiesByCategoryAsync(categoryId, status, cancellationToken);
         var entityResponse = mapper.Map<OperationResult<List<GetEntityResponse>>>(entities);
 
         return Ok(entityResponse);
@@ -77,9 +77,9 @@ public class EntitiesController(IEntityService entityService, IMapper mapper) : 
     #region Get - List
 
     [HttpGet("entities")]
-    public async Task<IActionResult> ListEntities([FromQuery] int? pageNumber, [FromQuery] int? pageSize, CancellationToken cancellationToken = default)
+    public async Task<IActionResult> ListEntities([FromQuery] int? pageNumber, [FromQuery] int? pageSize, [FromQuery] int? status, CancellationToken cancellationToken = default)
     {
-        var entities = await entityService.ListEntitiesAsync(pageNumber ?? 1, pageSize ?? 10, cancellationToken);
+        var entities = await entityService.ListEntitiesAsync(pageNumber ?? 1, pageSize ?? 10, status, cancellationToken);
         var entityResponse = mapper.Map<OperationResult<PaginatedResult<GetEntityResponse>>>(entities);
 
         return Ok(entityResponse);

@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Opinio.Core.Enums;
 
 namespace Opinio.Core.Entities;
 
@@ -36,6 +37,10 @@ public class Entity
     [MaxLength(500)]
     [Column("image_url")]
     public string ImageUrl { get; set; }
+
+    [Required]
+    [Column("status")]
+    public EntityStatus Status { get; set; }
 
     [Required]
     [MaxLength(200)]

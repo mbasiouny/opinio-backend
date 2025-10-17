@@ -19,5 +19,9 @@ public class EntityValidator : AbstractValidator<Entity>
 
         RuleFor(x => x.Website)
            .MaximumLength(255).WithMessage("Website Url Exceed Max Length");
+
+        RuleFor(x => x.Status)
+            .IsInEnum().WithMessage("Invalid Entity Status")
+            .NotEmpty().WithMessage("Status Is Required");
     }
 }

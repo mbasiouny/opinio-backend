@@ -9,6 +9,6 @@ public interface IEntityService
     Task<OperationResult<Entity>> UpdateEntityAsync(Entity entity, CancellationToken cancellationToken);
     Task<OperationResult<string>> DeleteEntityAsync(int id, CancellationToken cancellationToken);
     Task<OperationResult<Entity>> GetEntityAsync(int entityId, CancellationToken cancellationToken);
-    Task<OperationResult<List<Entity>>> ListEntitiesByCategoryAsync(int categoryId, CancellationToken cancellationToken);
-    Task<OperationResult<PaginatedResult<Entity>>> ListEntitiesAsync(int pageNumber, int pageSize, CancellationToken cancellationToken);
+    Task<OperationResult<List<Entity>>> ListEntitiesByCategoryAsync(int categoryId, int? status, CancellationToken cancellationToken);
+    Task<OperationResult<PaginatedResult<Entity>>> ListEntitiesAsync(int pageNumber, int pageSize, int? status, CancellationToken cancellationToken);
 }

@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Opinio.Core.Enums;
 
 namespace Opinio.API.Models.Entity;
 
@@ -20,4 +21,5 @@ public class UpdateEntityRequest
 
     [MaxLength(500)]
     public string ImageUrl { get; set; }
+    public EntityStatus Status { get; set; }
 }

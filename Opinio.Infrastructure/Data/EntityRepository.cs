@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Opinio.Core.Entities;
+using Opinio.Core.Enums;
 using Opinio.Core.Helpers;
 using Opinio.Core.Repositories;
 
@@ -19,23 +20,28 @@ public class EntityRepository(OpiniaDbContext opiniaDbContext) : GenericReposito
         base.ApplyMapping(existing, updated);
     }
 
-    public async Task<List<Entity>> ListByCategoryIdAsync(int categoryId, CancellationToken cancellationToken = default)
+    public async Task<List<Entity>> ListByCategoryIdAsync(int categoryId, int? status, CancellationToken cancellationToken = default)
     {
         return await _dbSet
             .Include(x => x.Category)
-            .Where(e => e.CategoryId == categoryId)
+            .Where(e => e.CategoryId == categoryId
+                        && (!status.HasValue || e.Status == (EntityStatus)status.Value))
             .ToListAsync(cancellationToken);
     }
     public async Task<Entity?> GetEntityAsync(int entityId, CancellationToken cancellationToken)
     {
         return await _dbSet.Include(e => e.Category).FirstOrDefaultAsync(e => e.Id == entityId);
     }
-
-    public async Task<PaginatedResult<Entity>> ListAsync(int pageNumber, int pageSize, CancellationToken cancellationToken)
+    public async Task<PaginatedResult<Entity>> ListAsync(int pageNumber, int pageSize, int? status, CancellationToken cancellationToken)
     {
-        var totalItems = await _dbSet.CountAsync(cancellationToken);
+        var query = _dbSet.AsQueryable();
 
-        var items = await _dbSet
+        if (status.HasValue)
+            query = query.Where(e => e.Status == (EntityStatus)status.Value);
+
+        var totalItems = await query.CountAsync(cancellationToken);
+
+        var items = await query
             .OrderBy(e => e.Id)
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)

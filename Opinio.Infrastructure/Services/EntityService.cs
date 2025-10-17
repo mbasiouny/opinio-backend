@@ -128,11 +128,11 @@ public class EntityService(
     #endregion
 
     #region List
-    public async Task<OperationResult<List<Entity>>> ListEntitiesByCategoryAsync(int categoryId, CancellationToken cancellationToken)
+    public async Task<OperationResult<List<Entity>>> ListEntitiesByCategoryAsync(int categoryId, int? status, CancellationToken cancellationToken)
     {
         try
         {
-            var entities = await entityRepository.ListByCategoryIdAsync(categoryId, cancellationToken);
+            var entities = await entityRepository.ListByCategoryIdAsync(categoryId, status, cancellationToken);
 
             return OperationResult<List<Entity>>.Success(entities, "All Entities Listed");
         }
@@ -144,7 +144,7 @@ public class EntityService(
     }
     #endregion
     #region ListPaginated
-    public async Task<OperationResult<PaginatedResult<Entity>>> ListEntitiesAsync(int pageNumber, int pageSize, CancellationToken cancellationToken)
+    public async Task<OperationResult<PaginatedResult<Entity>>> ListEntitiesAsync(int pageNumber, int pageSize, int? status, CancellationToken cancellationToken)
     {
         try
         {
@@ -156,7 +156,7 @@ public class EntityService(
             {
                 return OperationResultHelper.CreateValidationError<PaginatedResult<Entity>>(nameof(pageSize), "Invalid Page Size");
             }
-            var paginatedResult = await entityRepository.ListAsync(pageNumber, pageSize, cancellationToken);
+            var paginatedResult = await entityRepository.ListAsync(pageNumber, pageSize, status, cancellationToken);
             return OperationResult<PaginatedResult<Entity>>.Success(paginatedResult);
         }
         catch (Exception ex)
