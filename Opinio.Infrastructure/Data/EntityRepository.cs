@@ -15,6 +15,7 @@ public class EntityRepository(OpiniaDbContext opiniaDbContext) : GenericReposito
         existing.Website = updated.Website;
         existing.Address = updated.Address;
         existing.ImageUrl = updated.ImageUrl;
+        existing.Status = updated.Status;
         existing.UpdatedBy = "Guest";
         existing.UpdatedAt = DateTime.UtcNow;
         base.ApplyMapping(existing, updated);

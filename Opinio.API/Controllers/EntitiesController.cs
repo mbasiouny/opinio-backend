@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Opinio.API.Models.Entity;
 using Opinio.Core.Entities;
@@ -12,6 +13,7 @@ namespace Opinio.API.Controllers;
 public class EntitiesController(IEntityService entityService, IMapper mapper) : ControllerBase
 {
     #region POST - Create
+    [Authorize]
     [HttpPost("entities")]
     public async Task<IActionResult> CreateEntity([FromBody] CreateEntityRequest request, CancellationToken cancellationToken)
     {
@@ -24,7 +26,6 @@ public class EntitiesController(IEntityService entityService, IMapper mapper) : 
     #endregion
 
     #region Put - Update
-
     [HttpPut("entities/{id}")]
     public async Task<IActionResult> UpdateEntity([FromRoute] int id, [FromBody] UpdateEntityRequest request, CancellationToken cancellationToken)
     {
@@ -39,7 +40,6 @@ public class EntitiesController(IEntityService entityService, IMapper mapper) : 
     #endregion
 
     #region Delete - Delete
-
     [HttpDelete("entities/{id}")]
     public async Task<IActionResult> DeleteEntity([FromRoute] int id, CancellationToken cancellationToken)
     {

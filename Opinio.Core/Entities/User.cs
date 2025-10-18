@@ -23,7 +23,7 @@ public class User
 
     [Required]
     [Column("password_hash")]
-    public string PasswordHash { get; set; }
+    public string Password { get; set; }
 
     [Required]
     [Column("salt")]

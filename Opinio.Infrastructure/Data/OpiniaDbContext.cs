@@ -9,6 +9,8 @@ public class OpiniaDbContext : DbContext
 
     public DbSet<Category> Categories { get; set; }
     public DbSet<Entity> Entities { get; set; }
+    public DbSet<User> Users { get; set; }
+    public DbSet<JwtBlacklist> JwtBlacklists { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
