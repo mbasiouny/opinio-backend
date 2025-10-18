@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Opinio.API.Models.Category;
 using Opinio.Core.Entities;
@@ -12,7 +13,7 @@ namespace Opinio.API.Controllers;
 public class CategoriesController(ICategoryService categoryService, IMapper mapper) : ControllerBase
 {
     #region POST - Create
-    //[Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
     [HttpPost("categories")]
     public async Task<IActionResult> CreateCategory([FromBody] CreateCategoryRequest request, CancellationToken cancellationToken)
     {
@@ -25,7 +26,7 @@ public class CategoriesController(ICategoryService categoryService, IMapper mapp
     #endregion
 
     #region Put - Update
-
+    [Authorize(Roles = "Admin")]
     [HttpPut("categories/{id}")]
     public async Task<IActionResult> UpdateCategory([FromRoute] int id, [FromBody] UpdateCategoryRequest request, CancellationToken cancellationToken)
     {
@@ -40,7 +41,7 @@ public class CategoriesController(ICategoryService categoryService, IMapper mapp
     #endregion
 
     #region Delete - Delete
-
+    [Authorize(Roles = "Admin")]
     [HttpDelete("categories/{id}")]
     public async Task<IActionResult> DeleteCategory([FromRoute] int id, CancellationToken cancellationToken)
     {

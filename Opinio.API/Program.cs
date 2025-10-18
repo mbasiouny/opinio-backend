@@ -6,6 +6,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using Opinio.API;
+using Opinio.API.Filters;
+using Opinio.API.Helper;
+using Opinio.Core.Helpers;
 using Opinio.Infrastructure.Data;
 using Opinio.Infrastructure.Validators;
 using Serilog;
@@ -30,7 +33,9 @@ builder.Host.UseSerilog(
 builder.Services.ConfigureApplicationServices(builder.Configuration);
 
 builder.Services.AddControllers(options =>
-{ })
+{
+    options.Filters.Add<GlobalExceptionFilter>();
+})
 .AddJsonOptions(options =>
 {
 });
@@ -63,22 +68,43 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateIssuerSigningKey = true,
             ValidIssuer = builder.Configuration["Jwt:Issuer"],
             ValidAudience = builder.Configuration["Jwt:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!)),
+            ClockSkew = TimeSpan.Zero
         };
+
         options.Events = new JwtBearerEvents
         {
             OnTokenValidated = async ctx =>
             {
                 var db = ctx.HttpContext.RequestServices.GetRequiredService<OpiniaDbContext>();
+
                 var jti = ctx.Principal?.FindFirst(JwtRegisteredClaimNames.Jti)?.Value;
                 if (!string.IsNullOrEmpty(jti))
                 {
-                    var black = await db.JwtBlacklists.FirstOrDefaultAsync(b => b.Jti == jti);
-                    if (black != null)
+                    var black = await db.JwtBlacklists.FirstOrDefaultAsync(b => b.Jti == jti, ctx.HttpContext.RequestAborted);
+                    if (black is not null)
                     {
                         ctx.Fail("Token revoked");
                     }
                 }
+            },
+
+            OnChallenge = async ctx =>
+            {
+                ctx.HandleResponse();
+
+                var message =
+                    !string.IsNullOrWhiteSpace(ctx.ErrorDescription) ? ctx.ErrorDescription :
+                    ctx.AuthenticateFailure?.Message ?? "Unauthorized access.";
+
+                var op = OperationResult<string>.Unauthorized(message);
+                await OpResultWriter.WriteAsync(ctx.Response, op);
+            },
+
+            OnForbidden = async ctx =>
+            {
+                var op = OperationResult<string>.Forbidden("Forbidden access.");
+                await OpResultWriter.WriteAsync(ctx.Response, op);
             }
         };
     });
