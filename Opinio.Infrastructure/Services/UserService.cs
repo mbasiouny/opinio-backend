@@ -104,7 +104,7 @@ public class UserService(IUserRepository userRepository, IValidator<User> valida
             new Claim(JwtRegisteredClaimNames.Sub, user.Username),
             new Claim("userId", user.Id.ToString()),
             new Claim(JwtRegisteredClaimNames.Email, user.Email),
-            new Claim(ClaimTypes.Role, user.Role.ToString())
+            new Claim(ClaimTypes.Role, ((UserRole)user.Role).ToString())
         };
 
         var jti = Guid.NewGuid().ToString();

@@ -12,6 +12,7 @@ namespace Opinio.API.Controllers;
 public class CategoriesController(ICategoryService categoryService, IMapper mapper) : ControllerBase
 {
     #region POST - Create
+    //[Authorize(Roles = "Admin")]
     [HttpPost("categories")]
     public async Task<IActionResult> CreateCategory([FromBody] CreateCategoryRequest request, CancellationToken cancellationToken)
     {
@@ -63,7 +64,6 @@ public class CategoriesController(ICategoryService categoryService, IMapper mapp
     #endregion
 
     #region Get - List
-
     [HttpGet("categories")]
     public async Task<IActionResult> ListCategories(CancellationToken cancellationToken)
     {
