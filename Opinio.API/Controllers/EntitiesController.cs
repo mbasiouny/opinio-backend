@@ -26,6 +26,7 @@ public class EntitiesController(IEntityService entityService, IMapper mapper) : 
     #endregion
 
     #region Put - Update
+    [Authorize(Roles = "Admin")]
     [HttpPut("entities/{id}")]
     public async Task<IActionResult> UpdateEntity([FromRoute] int id, [FromBody] UpdateEntityRequest request, CancellationToken cancellationToken)
     {
@@ -40,6 +41,7 @@ public class EntitiesController(IEntityService entityService, IMapper mapper) : 
     #endregion
 
     #region Delete - Delete
+    [Authorize(Roles = "Admin")]
     [HttpDelete("entities/{id}")]
     public async Task<IActionResult> DeleteEntity([FromRoute] int id, CancellationToken cancellationToken)
     {
