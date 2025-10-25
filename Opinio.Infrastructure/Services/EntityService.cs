@@ -10,6 +10,7 @@ namespace Opinio.Infrastructure.Services;
 
 public class EntityService(
     IEntityRepository entityRepository,
+    ICurrentUserService currentUserService,
     ICategoryRepository categoryRepository,
     IValidator<Entity> validator
     ) : IEntityService
@@ -28,7 +29,7 @@ public class EntityService(
                 return OperationResultHelper.CreateValidationError<Entity>(nameof(entity.CategoryId), "This Category Not Found");
             }
 
-            entity.CreatedBy = "Guest";
+            entity.CreatedBy = currentUserService.Username;
             entity.CreatedAt = DateTime.UtcNow;
 
             await entityRepository.CreateAsync(entity, cancellationToken);

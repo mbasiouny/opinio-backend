@@ -1,5 +1,7 @@
 ﻿using System.Diagnostics;
 using Microsoft.EntityFrameworkCore;
+using Opinio.API.Services;
+using Opinio.Core.Services;
 using Opinio.Infrastructure.Data;
 using Opinio.Infrastructure.Extensions;
 using Serilog;
@@ -21,6 +23,7 @@ public static class ServiceConfiguration
         services.AddAutoMapper(cfg => { }, AppDomain.CurrentDomain.GetAssemblies());
 
         services.AddHttpContextAccessor();
+        services.AddScoped<ICurrentUserService, CurrentUserService>();
 
         Log.Logger = new LoggerConfiguration().ReadFrom.Configuration(config).CreateLogger();
         services.AddTransient<Microsoft.Extensions.Logging.ILogger>(_ => _.GetRequiredService<ILogger<Program>>());

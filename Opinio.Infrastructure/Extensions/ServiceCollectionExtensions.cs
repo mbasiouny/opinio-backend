@@ -16,6 +16,9 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IEntityService, EntityService>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IReviewRepository, ReviewRepository>();
+        services.AddScoped<IReviewImageRepository, ReviewImageRepository>();
+        services.AddScoped<IReviewService, ReviewService>();
 
         return services;
     }

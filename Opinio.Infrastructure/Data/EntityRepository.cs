@@ -3,10 +3,11 @@ using Opinio.Core.Entities;
 using Opinio.Core.Enums;
 using Opinio.Core.Helpers;
 using Opinio.Core.Repositories;
+using Opinio.Core.Services;
 
 namespace Opinio.Infrastructure.Data;
 
-public class EntityRepository(OpiniaDbContext opiniaDbContext) : GenericRepository<Entity>(opiniaDbContext), IEntityRepository
+public class EntityRepository(OpiniaDbContext opiniaDbContext, ICurrentUserService currentUserService) : GenericRepository<Entity>(opiniaDbContext), IEntityRepository
 {
     protected override void ApplyMapping(Entity existing, Entity updated)
     {
@@ -16,7 +17,7 @@ public class EntityRepository(OpiniaDbContext opiniaDbContext) : GenericReposito
         existing.Address = updated.Address;
         existing.ImageUrl = updated.ImageUrl;
         existing.Status = updated.Status;
-        existing.UpdatedBy = "Guest";
+        existing.UpdatedBy = currentUserService.Username;
         existing.UpdatedAt = DateTime.UtcNow;
         base.ApplyMapping(existing, updated);
     }
@@ -49,5 +50,10 @@ public class EntityRepository(OpiniaDbContext opiniaDbContext) : GenericReposito
             .ToListAsync(cancellationToken);
 
         return new PaginatedResult<Entity>(totalItems, pageSize, items);
+    }
+
+    public Task<bool> IsExistAsync(int id, CancellationToken cancellationToken)
+    {
+        return _dbSet.AnyAsync(e => e.Id == id, cancellationToken);
     }
 }

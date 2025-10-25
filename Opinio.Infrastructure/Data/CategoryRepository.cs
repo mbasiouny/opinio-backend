@@ -11,7 +11,7 @@ public class CategoryRepository(OpiniaDbContext opiniaDbContext) : GenericReposi
         existing.Name = updated.Name;
         existing.Description = updated.Description;
         existing.ImageUrl = updated.ImageUrl;
-        existing.UpdatedBy = "Guest";
+        existing.UpdatedBy = "Admin";
         existing.UpdatedAt = DateTime.UtcNow;
         base.ApplyMapping(existing, updated);
     }
