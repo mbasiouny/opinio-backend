@@ -34,9 +34,5 @@ public class ReviewValidator : AbstractValidator<Review>
             .NotEmpty()
             .When(x => x.IsConsumer == true)
             .WithMessage("ItemsBought is required when user is a consumer.");
-
-        RuleForEach(x => x.Images)
-            .SetValidator(new ReviewImageValidator())
-            .When(x => x.Images != null && x.Images.Any());
     }
 }

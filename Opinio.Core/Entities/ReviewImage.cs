@@ -15,8 +15,6 @@ public class ReviewImage
     [Column("review_id")]
     public int ReviewId { get; set; }
 
-    [Required]
-    [MaxLength(500)]
     [Column("image_url")]
     public string ImageUrl { get; set; } = string.Empty;
 
